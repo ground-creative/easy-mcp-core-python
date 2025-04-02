@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request
 from core.utils.env import EnvConfig
 from core.version import version
-from core.utils.config import config
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
@@ -22,7 +21,8 @@ async def status(request: Request):
         {
             "request": request,
             "version": version,
-            "logo_url": config.get("SERVICES_LOGO_URL", ""),
+            "logo_url": EnvConfig.get("SERVICES_LOGO_URL", ""),
+            "favicon_url": EnvConfig.get("SERVICES_FAVICON_URL", ""),
             "mcp_server_url": f"{EnvConfig.get('MCP_SERVER_URL')}",
             "mcp_server_name": EnvConfig.get("SERVER_NAME"),
         },
