@@ -11,7 +11,7 @@ https://github.com/ground-creative/easy-mcp-python
 git clone https://github.com/ground-creative/easy-mcp-core-python.git core
 ```
 
-2. Install requirements from file:
+2. Install requirements:
 
 ```
 pip install -r core/requirements.txt
