@@ -41,6 +41,7 @@ def register_tools(mcp):
 
 def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
     tool_functions = []
+    seen_functions = set()  # Set to track unique function names
 
     # Check if the directory exists
     if not os.path.exists(directory):
@@ -54,22 +55,29 @@ def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             file_path = os.path.join(directory, filename)
+            # Use exec to import the module and access its functions
             with open(file_path, "r") as file:
                 file_content = file.read()
-                # Parse the file content into an AST
-                tree = ast.parse(file_content)
+                exec(
+                    file_content, globals()
+                )  # Execute the file content in the global context
 
-                # Iterate over all functions in the AST
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef) and node.name.endswith(
-                        "_tool"
+                # Now, iterate over all functions in the globals()
+                for name, func in globals().items():
+                    if (
+                        callable(func)
+                        and name.endswith("_tool")
+                        and name not in seen_functions
+                        and not getattr(func, "_exclude", False)  # Check for exclusion
                     ):
                         found_tool_function = True  # Mark that we found a tool function
                         function_info = {
-                            "name": node.name,
+                            "name": name,
                             "params": [],
-                            "description": ast.get_docstring(node)
-                            or "No description available",
+                            "description": func.__doc__ or "No description available",
+                            "tags": getattr(func, "_tags", ["General"])[
+                                0
+                            ],  # Get the single tag or default to "General"
                         }
 
                         # Preprocess the description to replace newlines with <br>
@@ -77,15 +85,17 @@ def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
                             "description"
                         ].replace("\n", "<br>")
 
+                        # Remove the first newline if the description starts with a newline
+                        if function_info["description"].startswith("<br>"):
+                            function_info["description"] = function_info["description"][
+                                4:
+                            ]  # Remove the first <br>
+
                         # Extract parameter details
-                        for arg in node.args.args:
+                        for arg in func.__annotations__:
                             param_info = {
-                                "name": arg.arg,
-                                "type": (
-                                    ast.unparse(arg.annotation)
-                                    if arg.annotation
-                                    else "No type"
-                                ),
+                                "name": arg,
+                                "type": str(func.__annotations__[arg]),
                                 "description": None,  # Placeholder for description
                             }
                             # Check for parameter description in the docstring
@@ -102,6 +112,7 @@ def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
                             function_info["params"].append(param_info)
 
                         tool_functions.append(function_info)
+                        seen_functions.add(name)  # Add the function name to the set
 
     # If no tool functions were found, log a warning
     if not found_tool_function:
@@ -110,6 +121,46 @@ def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
         )
 
     return tool_functions
+
+
+def group_tools_by_tag(
+    tool_functions: List[Dict[str, Any]],
+) -> Dict[str, List[Dict[str, Any]]]:
+    grouped_tools = {}
+
+    # Group tools by their tags
+    for tool in tool_functions:
+        tag = tool["tags"]  # Assuming tags are stored as a string
+        if tag not in grouped_tools:
+            grouped_tools[tag] = []  # Initialize the list for the tag
+        grouped_tools[tag].append(tool)  # Add the tool to the corresponding tag list
+
+    # Sort the dictionary by tag (keys) alphabetically
+    sorted_grouped_tools = dict(sorted(grouped_tools.items()))
+
+    # Sort functions within each tag alphabetically by their names
+    for tag in sorted_grouped_tools:
+        sorted_grouped_tools[tag].sort(
+            key=lambda x: x["name"].lower()
+        )  # Sort alphabetically, case insensitive
+
+    return sorted_grouped_tools
+
+
+def doc_tag(tag: str):
+    """Add a single tag to the tool function for service info page"""
+
+    def decorator(func):
+        func._tags = (tag,)  # Store the tag as a tuple
+        return func
+
+    return decorator
+
+
+def doc_exclude(func):
+    """Decorator to exclude a function from the tool functions list."""
+    func._exclude = True  # Set an attribute to indicate exclusion
+    return func
 
 
 def format_function_name(func_name: str) -> str:

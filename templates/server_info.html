@@ -24,6 +24,10 @@
             padding: 15px 20px;
             text-align: center;
         }
+        
+        h4 {
+            margin: 15px 0 3px 5px;
+        }
 
         .container {
             flex: 1; /* Allow the container to grow and take available space */
@@ -236,25 +240,28 @@
         {% endif %}
 
         {% if functions_info %}
-        <h3>Tools</h3>
-        {% for func in functions_info %}
-        <button class="collapsible">
-            <span class="toggle-icon">
-                <i class="fas fa-chevron-down"></i>
-            </span> {{ format_function_name(func.name) }}
-        </button>
-        <div class="content">
-            <p>{{ func.description | safe }}</p>
-            <!--<p><strong>Parameters:</strong></p>
-            <ul>
-                {% for param in func.params %}
-                <li>
-                    <strong>{{ param.name }}</strong> ({{ param.type }}): {{ param.description }}
-                </li>
+            <h3>Tools</h3>
+            {% for tag, funcs in functions_info.items() %}
+                <h4>{{ tag }}</h4>  <!-- Title for each tag group -->
+                {% for func in funcs %}
+                    <button class="collapsible">
+                        <span class="toggle-icon">
+                            <i class="fas fa-chevron-down"></i>
+                        </span> {{ format_function_name(func.name) }}
+                    </button>
+                    <div class="content">
+                        <p>{{ func.description | safe }}</p>
+                        <!--<p><strong>Parameters:</strong></p>
+                        <ul>
+                            {% for param in func.params %}
+                            <li>
+                                <strong>{{ param.name }}</strong> ({{ param.type }}): {{ param.description }}
+                            </li>
+                            {% endfor %}
+                        </ul>-->
+                    </div>
                 {% endfor %}
-            </ul>-->
-        </div>
-        {% endfor %}
+            {% endfor %}
         {% endif %}
     </div>
 

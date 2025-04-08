@@ -2,7 +2,11 @@ from fastapi import APIRouter, Request
 from core.utils.env import EnvConfig
 from core.utils.config import config
 from core.version import version
-from core.utils.tools import extract_tool_functions, format_function_name
+from core.utils.tools import (
+    extract_tool_functions,
+    format_function_name,
+    group_tools_by_tag,
+)
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 import os
@@ -32,6 +36,20 @@ async def status(request: Request):
 
     if server_info_config.get("show_tools_specs", False):
         functions_info = extract_tool_functions(tools_directory)
+
+    functions_info = group_tools_by_tag(functions_info)
+
+    # functions_info = []
+
+    # functions_info = sorted(functions_info, key=lambda x: x["name"])
+    # functions_info = sorted(
+    #    functions_info,
+    #    key=lambda x: x["name"].split()[1] if len(x["name"].split()) > 1 else "",
+    # )
+    # functions_info = sorted(
+    #    functions_info,
+    #    key=lambda x: x["name"].split()[2] if len(x["name"].split()) > 2 else "",
+    # )
 
     return templates.TemplateResponse(
         "server_info.html",
