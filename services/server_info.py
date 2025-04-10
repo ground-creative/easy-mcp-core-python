@@ -30,26 +30,14 @@ async def status(request: Request):
     site_url = server_info_config.get("site_url", "")
     site_name = server_info_config.get("site_name", site_url)
     header_params = server_info_config.get("header_params", {})  # Get header parameters
+    notes = server_info_config.get("notes", [])
     current_directory = os.getcwd()
     tools_directory = os.path.join(current_directory, "app/tools")
     functions_info = []
 
     if server_info_config.get("show_tools_specs", False):
         functions_info = extract_tool_functions(tools_directory)
-
-    functions_info = group_tools_by_tag(functions_info)
-
-    # functions_info = []
-
-    # functions_info = sorted(functions_info, key=lambda x: x["name"])
-    # functions_info = sorted(
-    #    functions_info,
-    #    key=lambda x: x["name"].split()[1] if len(x["name"].split()) > 1 else "",
-    # )
-    # functions_info = sorted(
-    #    functions_info,
-    #    key=lambda x: x["name"].split()[2] if len(x["name"].split()) > 2 else "",
-    # )
+        functions_info = group_tools_by_tag(functions_info)
 
     return templates.TemplateResponse(
         "server_info.html",
@@ -66,5 +54,6 @@ async def status(request: Request):
             "functions_info": functions_info,  # Pass the functions_info to the template
             "format_function_name": format_function_name,  # Pass the formatting function to the template
             "header_params": header_params,  # Pass the header parameters to the template
+            "notes": notes
         },
     )

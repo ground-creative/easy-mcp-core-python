@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ server_name }}</title>
     <link rel="icon" href="{{ favicon_url }}" type="image/x-icon"> <!-- Favicon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        crossorigin="anonymous">
     <style>
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensure the body takes the full height of the viewport */
+            min-height: 100vh;
+            /* Ensure the body takes the full height of the viewport */
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -24,13 +26,14 @@
             padding: 15px 20px;
             text-align: center;
         }
-        
+
         h4 {
             margin: 15px 0 3px 5px;
         }
 
         .container {
-            flex: 1; /* Allow the container to grow and take available space */
+            flex: 1;
+            /* Allow the container to grow and take available space */
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
@@ -69,7 +72,8 @@
             transform: rotate(180deg);
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #d3d3d3;
         }
 
@@ -132,8 +136,10 @@
             background-color: #1c283e;
             color: white;
             text-align: center;
-            padding: 5px 0; /* Reduced padding */
-            font-size: 12px; /* Adjusted font size */
+            padding: 5px 0;
+            /* Reduced padding */
+            font-size: 12px;
+            /* Adjusted font size */
         }
 
         footer p {
@@ -141,16 +147,21 @@
             margin: 5px;
         }
 
-        @media (max-width: 800px) { /* Medium devices (md) */
+        @media (max-width: 800px) {
+
+            /* Medium devices (md) */
             .container {
                 width: 80%;
             }
         }
 
-        @media (min-width: 800px) { /* Medium devices (md) */
+        @media (min-width: 800px) {
+
+            /* Medium devices (md) */
             .container {
                 width: 800px;
-                max-width: 800px; /* Bootstrap's md breakpoint */
+                max-width: 800px;
+                /* Bootstrap's md breakpoint */
             }
         }
     </style>
@@ -172,10 +183,10 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const collapsibles = document.getElementsByClassName("collapsible");
             for (let i = 0; i < collapsibles.length; i++) {
-                collapsibles[i].addEventListener("click", function() {
+                collapsibles[i].addEventListener("click", function () {
                     this.classList.toggle("active");
                     const content = this.nextElementSibling;
 
@@ -190,13 +201,13 @@
 
     <header>
         {% if logo_url %}
-            {% if site_url %}
-                <a href="{{ site_url }}" target="_blank" rel="noopener noreferrer">
-                    <img src="{{ logo_url }}" alt="{{ server_name }}" class="logo">
-                </a>
-            {% else %}
-                <img src="{{ logo_url }}" alt="{{ server_name }}" class="logo">
-            {% endif %}
+        {% if site_url %}
+        <a href="{{ site_url }}" target="_blank" rel="noopener noreferrer">
+            <img src="{{ logo_url }}" alt="{{ server_name }}" class="logo">
+        </a>
+        {% else %}
+        <img src="{{ logo_url }}" alt="{{ server_name }}" class="logo">
+        {% endif %}
         {% endif %}
         <h1>{{ mcp_server_name }}</h1>
     </header>
@@ -211,7 +222,7 @@
                 <i class="fas fa-copy"></i>
             </button>
         </p>
-        
+
         {% if login_url %}
         <p>
             Login URL:
@@ -227,7 +238,7 @@
         <p>
             MCP Status: <strong>Running ✅</strong>
         </p>
-    
+
         {% if header_params %}
         <h3>Header Parameters</h3>
         <ul>
@@ -239,19 +250,28 @@
         </ul>
         {% endif %}
 
+        {% if notes %}
+        <h3>Notes</h3>
+        <div>
+            {% for note in notes %}
+            <p style="margin: 5px 0;">{{ note }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% if functions_info %}
-            <h3>Tools</h3>
-            {% for tag, funcs in functions_info.items() %}
-                <h4>{{ tag }}</h4>  <!-- Title for each tag group -->
-                {% for func in funcs %}
-                    <button class="collapsible">
-                        <span class="toggle-icon">
-                            <i class="fas fa-chevron-down"></i>
-                        </span> {{ format_function_name(func.name) }}
-                    </button>
-                    <div class="content">
-                        <p>{{ func.description | safe }}</p>
-                        <!--<p><strong>Parameters:</strong></p>
+        <h3>Tools</h3>
+        {% for tag, funcs in functions_info.items() %}
+        <h4>{{ tag }}</h4> <!-- Title for each tag group -->
+        {% for func in funcs %}
+        <button class="collapsible">
+            <span class="toggle-icon">
+                <i class="fas fa-chevron-down"></i>
+            </span> {{ format_function_name(func.name) }}
+        </button>
+        <div class="content">
+            <p>{{ func.description | safe }}</p>
+            <!--<p><strong>Parameters:</strong></p>
                         <ul>
                             {% for param in func.params %}
                             <li>
@@ -259,9 +279,9 @@
                             </li>
                             {% endfor %}
                         </ul>-->
-                    </div>
-                {% endfor %}
-            {% endfor %}
+        </div>
+        {% endfor %}
+        {% endfor %}
         {% endif %}
     </div>
 
@@ -269,7 +289,8 @@
     <footer>
         {% if site_url %}
         <p>
-            Powered by <a href="{{ site_url }}" target="_blank" class="login-anchor" style="color: white; text-decoration: underline;" rel="noopener noreferrer">{{ site_name }}</a>
+            Powered by <a href="{{ site_url }}" target="_blank" class="login-anchor"
+                style="color: white; text-decoration: underline;" rel="noopener noreferrer">{{ site_name }}</a>
         </p>
         {% endif %}
     </footer>
