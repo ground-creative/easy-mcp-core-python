@@ -1,5 +1,5 @@
 import importlib, os, ast
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from core.utils.logger import logger
 from core.utils.env import EnvConfig
 
@@ -79,6 +79,10 @@ def extract_tool_functions(directory: str) -> List[Dict[str, Any]]:
                                 0
                             ],  # Get the single tag or default to "General"
                         }
+                        func_name = getattr(func, "_name", "")
+
+                        if func_name:
+                            function_info["name"] = func_name
 
                         # Preprocess the description to replace newlines with <br>
                         function_info["description"] = function_info[
@@ -151,7 +155,17 @@ def doc_tag(tag: str):
     """Add a single tag to the tool function for service info page"""
 
     def decorator(func):
-        func._tags = (tag,)  # Store the tag as a tuple
+        func._tags = (tag,)
+        return func
+
+    return decorator
+
+
+def doc_name(name: str):
+    """Add a single tag to the tool function for service info page"""
+
+    def decorator(func):
+        func._name = name
         return func
 
     return decorator
