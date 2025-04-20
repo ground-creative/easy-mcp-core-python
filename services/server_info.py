@@ -20,6 +20,8 @@ router = APIRouter()
 
 server_info_config = config.get("INFO_SERVICE_CONFIG", {})
 main_url = server_info_config.get("service_url", "/")
+privacy_policy_url = server_info_config.get("privacy_policy_url", "")
+terms_of_service_url = server_info_config.get("terms_of_service_url", "")
 
 
 @router.get(main_url)
@@ -54,6 +56,8 @@ async def status(request: Request):
             "functions_info": functions_info,  # Pass the functions_info to the template
             "format_function_name": format_function_name,  # Pass the formatting function to the template
             "header_params": header_params,  # Pass the header parameters to the template
-            "notes": notes
+            "notes": notes,
+            "privacy_policy_url": privacy_policy_url,
+            "terms_of_service_url": terms_of_service_url,
         },
     )

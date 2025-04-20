@@ -284,6 +284,17 @@
         {% endif %}
     </div>
 
+    {% if terms_of_service_url or privacy_policy_url %}
+        <div style="text-align: center; margin: 0 0 20px 0;">
+            {% if privacy_policy_url %}
+                <a href="{{ privacy_policy_url }}" style="margin-right: 15px; color: #1c283e; text-decoration: underline;">Privacy Policy</a>
+            {% endif %}
+            {% if terms_of_service_url %}
+                <a href="{{ terms_of_service_url }}" style="color: #1c283e; text-decoration: underline;">Terms and Conditions</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
     <!-- Footer Section -->
     <footer>
         {% if site_url %}
